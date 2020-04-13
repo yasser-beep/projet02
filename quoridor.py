@@ -249,3 +249,42 @@ def construire_graphe(joueurs, murs_horizontaux, murs_verticaux):
         graphe.add_edge((x, 1), 'B2')
 
     return graphe
+
+def afficher_damier_ascii(dictio):
+    """Affiche le damier"""
+    nom = [dictio['joueurs'][i]['nom'] for i in range(2)]
+    affichage = ''
+    affichage += f'Légende: 1={nom[0]}, 2={nom[1]}'+'\n'
+    affichage += 3*" "+35*"-"+'\n'
+    resultat = []
+    index = 10
+    for i in range(9):
+        resultat.append(['.' if i%4 == 0 else " " for i in range(33)])
+        resultat.append([" " for _ in range(35)])
+    resultat.pop(-1)
+    player = dictio["joueurs"][0]
+    bot = dictio["joueurs"][1]
+    horizontaux = dictio["murs"]["horizontaux"]
+    verticaux = dictio["murs"]["verticaux"]
+    resultat[17-2*player["pos"][1]+1][4*(player["pos"][0]-1)] = str(1)
+    resultat[17-2*bot["pos"][1]+1][4*(bot["pos"][0]-1)] = str(2)
+    for horizontal in horizontaux:
+        resultat[17-2*horizontal[1]+2][4*(horizontal[0]-1):4*(horizontal[0]-1)+5+2] = 7*"-"
+    for vertical in verticaux:
+        j = 0
+        for i in range(3):
+            toggle = 1 if j == 1 else 0
+            resultat[17-2*(vertical[1]+i)+1+j][4*(vertical[0]-2)+2+toggle] = chr(124)
+            j += 1
+    for i, j in enumerate(resultat, 1):
+        if i%2:
+            index -= 1
+            affichage += str(index)+" "+chr(124)+" "+''.join(j)+" "+chr(124)+'\n'
+        else:
+            affichage += 2*" "+chr(124)+''.join(j)+chr(124)+'\n'
+    affichage += f'{"--"+ chr(124)+35*"-"}'+'\n'
+    affichage += f'{2*" "+chr(124)+" "}'
+    for i in range(1, 10):
+        affichage += f'{str(i)+3*" "}'
+    affichage += '\n'
+    return affichage
