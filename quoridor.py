@@ -203,6 +203,18 @@ class Quoridor:
             self.partie['murs']['horizontaux'],
             self.partie['murs']['verticaux']
         )
+        if joueur == 1 and pos == (5, 1):
+            successors = list(graphe.successors(pos))[:-1]
+        else:
+            successors = list(graphe.successors(pos))
+        existchemin = [j for j in (nx.has_path(graphe, i, obj) for i in successors)]
+        dictchemin = dict(zip(successors, existchemin))
+        length = [len(nx.shortest_path(graphe, key, obj)) for key in successors]
+        shrtpth = dict(zip(successors, length))
+        for key, val in dictchemin:
+            if not val:
+                shrtpth.pop(key)
+        return min(shrtpth.keys(), key=shrtpth.get)
 
     def partie_terminée(self):
         """Déterminer si la partie est terminée.
