@@ -189,6 +189,20 @@ class Quoridor:
             Tuple[str, Tuple[int, int]]: Un tuple composé du type et de la position du coup joué.
         """
         pass
+    
+    def bestsuccessor(self, joueur):
+        """
+        fonction qui permet de jouer le meilleur coup parmis les
+        coups disponibles qui ne nous enferment pas.
+        """
+        pos = self.partie["joueurs"][joueur-1]["pos"]
+        obj = "B1" if joueur == 1 else "B2"
+        successors = []
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.partie['joueurs']],
+            self.partie['murs']['horizontaux'],
+            self.partie['murs']['verticaux']
+        )
 
     def partie_terminée(self):
         """Déterminer si la partie est terminée.
