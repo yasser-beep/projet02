@@ -211,10 +211,10 @@ class Quoridor:
             self.partie['murs']['horizontaux'],
             self.partie['murs']['verticaux']
         )
-        if joueur == 1 and pos == (5, 1):
-            successors = list(graphe.successors(pos))[:-1]
-        else:
-            successors = list(graphe.successors(pos))
+        successors = list(graphe.successors(pos))
+        for index, data in enumerate(successors):
+            if not isinstance(data, tuple):
+                successors.pop(index)
         existchemin = [j for j in (nx.has_path(graphe, i, obj) for i in successors)]
         dictchemin = dict(zip(successors, existchemin))
         length = [len(nx.shortest_path(graphe, key, obj)) for key in successors]
@@ -222,7 +222,6 @@ class Quoridor:
         for key, val in dictchemin:
             if not val:
                 shrtpth.pop(key)
-        print(joueur, shrtpth)
         return min(shrtpth.keys(), key=shrtpth.get)
 
     def partie_terminée(self):
@@ -427,44 +426,3 @@ def afficher_damier_ascii(dictio):
     affichage += '\n'
     return affichage
 
-if __name__ == "__main__":
-    QUORID = Quoridor(["will", "oeuf"])
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    print("jd")
-    # print(QUORID.état_partie())
-    QUORID.jouer_coup(2)
-    print(QUORID)
-    # print(QUORID.état_partie())
-    QUORID.jouer_coup(2)
-    print(QUORID.état_partie())
-    # QUORID.jouer_coup(1)
-    print(QUORID)
-    QUORID.jouer_coup(1)
-    # print(QUORID) ----
-    # QUORID.jouer_coup(1)
-    # print(QUORID)
-
-    # QUORID.déplacer_jeton(2, (3, 5))
-    # print(QUORID)
-    # QUORID.déplacer_jeton(2, (3, 4))
-    # print(QUORID)
-    # QUORID.déplacer_jeton(2, (3, 3))
-    # print(QUORID)
-    # QUORID.déplacer_jeton(2, (3, 2))
-    # print(QUORID)
-    # QUORID.déplacer_jeton(2, (3, 1))
-    print(QUORID)
-    print(QUORID.partie_terminée())
