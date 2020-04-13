@@ -107,7 +107,7 @@ class Quoridor:
         Returns:
             str: La chaîne de caractères de la représentation.
         """
-        pass
+        return afficher_damier_ascii(self.partie)
 
     def déplacer_jeton(self, joueur, position):
         """Déplace un jeton.
@@ -123,7 +123,20 @@ class Quoridor:
             QuoridorError: La position est invalide (en dehors du damier).
             QuoridorError: La position est invalide pour l'état actuel du jeu.
         """
-        pass
+        numero = (1, 2)
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if position[0] < 1 or position[0] > 9 or position[1] < 1 or position[1] > 9:
+            raise QuoridorError(MSG9)
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.partie['joueurs']],
+            self.partie['murs']['horizontaux'],
+            self.partie['murs']['verticaux']
+        )
+        pos = self.partie["joueurs"][joueur-1]["pos"]
+        if position not in list(graphe.successors(pos)):
+            raise QuoridorError(MSG10)
+        self.partie["joueurs"][joueur-1]["pos"] = position
 
     def état_partie(self):
         """Produire l'état actuel de la partie.
@@ -183,7 +196,15 @@ class Quoridor:
         Returns:
             str/bool: Le nom du gagnant si la partie est terminée; False autrement.
         """
-        pass
+        joueur1, joueur2 = (self.partie["joueurs"][i] for i in (0, 1))
+        pos1 = joueur1["pos"]
+        pos2 = joueur2["pos"]
+        if pos1[1] == 9:
+            return joueur1["nom"]
+        elif pos2[1] == 1:
+            return joueur2["nom"]
+        else:
+            return False
 
     def placer_mur(self, joueur, position, orientation):
         """Placer un mur.
