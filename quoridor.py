@@ -211,10 +211,17 @@ class Quoridor:
             self.partie['murs']['horizontaux'],
             self.partie['murs']['verticaux']
         )
+<<<<<<< HEAD
         successors = list(graphe.successors(pos))
         for index, data in enumerate(successors):
             if not isinstance(data, tuple):
                 successors.pop(index)
+=======
+        if joueur == 1 and pos == (5, 1):
+            successors = list(graphe.successors(pos))[:-1]
+        else:
+            successors = list(graphe.successors(pos))
+>>>>>>> 25163c29dea58e2b8ff7d9c94a6a9bb916365136
         existchemin = [j for j in (nx.has_path(graphe, i, obj) for i in successors)]
         dictchemin = dict(zip(successors, existchemin))
         length = [len(nx.shortest_path(graphe, key, obj)) for key in successors]
@@ -467,4 +474,8 @@ if __name__ == "__main__":
     # print(QUORID)
     # QUORID.déplacer_jeton(2, (3, 1))
     print(QUORID)
+<<<<<<< HEAD
     print(QUORID.partie_terminée())
+=======
+    print(QUORID.partie_terminée())
+>>>>>>> 25163c29dea58e2b8ff7d9c94a6a9bb916365136
