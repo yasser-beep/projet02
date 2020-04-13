@@ -201,7 +201,32 @@ class Quoridor:
             QuoridorError: La position est invalide pour cette orientation.
             QuoridorError: Le joueur a déjà placé tous ses murs.
         """
-        pass
+        numero = (1, 2)
+        ortn = ("horizontal", "vertical")
+        cd = position
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if orientation not in ortn:
+            raise QuoridorError(MSG14)
+        if self.partie["joueurs"][joueur-1]["murs"] == 0:
+            raise QuoridorError(MSG15)
+        if orientation == "horizontal":
+            for pos in self.partie["murs"]["horizontaux"]:
+                if (cd[0] == pos[0]-1 or cd[0] == pos[0] or cd[0] == pos[0]+1) and cd[1] == pos[1]:
+                    raise QuoridorError(MSG14)
+            self.partie["joueurs"][joueur-1]["murs"] -= 1
+            self.partie["murs"]["horizontaux"].append(position)
+        elif orientation == "vertical":
+            for pos in self.partie["murs"]["verticaux"]:
+                if (cd[1] == pos[1]-1 or cd[1] == pos[1] or cd[1] == pos[1]+1) and cd[0] == pos[0]:
+                    raise QuoridorError(MSG14)
+            self.partie["joueurs"][joueur-1]["murs"] -= 1
+            self.partie["murs"]["verticaux"].append(position)
+        for vert in self.partie["murs"]["verticaux"]:
+            for hori in self.partie["murs"]["horizontaux"]:
+                if vert == (hori[0]+1, hori[1]-1):
+                    raise QuoridorError(MSG14)
+        self.analyser(self.partie)
 
     def analyser(self, partie):
         """
