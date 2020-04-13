@@ -1,3 +1,4 @@
+"""Module Quoridor"""
 import networkx as nx
 
 
@@ -10,7 +11,7 @@ MSG6 = "Le total des murs placés et plaçables n'est pas égal à 20."
 MSG7 = "La position d'un mur est invalide."
 MSG8 = "Le numéro du joueur est autre que 1 ou 2."
 MSG9 = "La position est invalide (en dehors du damier)."
-MSG10 ="La position est invalide pour l'état actuel du jeu."
+MSG10 = "La position est invalide pour l'état actuel du jeu."
 MSG11 = "La partie est déjà terminée."
 MSG13 = "Un mur occupe déjà cette position."
 MSG14 = "La position est invalide pour cette orientation."
@@ -31,6 +32,7 @@ class Quoridor:
     Examples:
         >>> q.Quoridor()
     """
+
     def __init__(self, joueurs, murs=None):
         """Constructeur de la classe Quoridor.
 
@@ -107,7 +109,7 @@ class Quoridor:
         Returns:
             str: La chaîne de caractères de la représentation.
         """
-        pass
+        return afficher_damier_ascii(self.partie)
 
     def déplacer_jeton(self, joueur, position):
         """Déplace un jeton.
@@ -123,7 +125,20 @@ class Quoridor:
             QuoridorError: La position est invalide (en dehors du damier).
             QuoridorError: La position est invalide pour l'état actuel du jeu.
         """
-        pass
+        numero = (1, 2)
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if position[0] < 1 or position[0] > 9 or position[1] < 1 or position[1] > 9:
+            raise QuoridorError(MSG9)
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.partie['joueurs']],
+            self.partie['murs']['horizontaux'],
+            self.partie['murs']['verticaux']
+        )
+        pos = self.partie["joueurs"][joueur-1]["pos"]
+        if position not in list(graphe.successors(pos)):
+            raise QuoridorError(MSG10)
+        self.partie["joueurs"][joueur-1]["pos"] = position
 
     def état_partie(self):
         """Produire l'état actuel de la partie.
@@ -156,7 +171,7 @@ class Quoridor:
             situe entre les lignes y-1 et y, et bloque les colonnes x et x+1. De même, un
             mur vertical se situe entre les colonnes x-1 et x, et bloque les lignes y et y+1.
         """
-        pass
+        return self.partie
 
     def jouer_coup(self, joueur):
         """Jouer un coup automatique pour un joueur.
@@ -171,11 +186,44 @@ class Quoridor:
         Raises:
             QuoridorError: Le numéro du joueur est autre que 1 ou 2.
             QuoridorError: La partie est déjà terminée.
-            
+
         Returns:
             Tuple[str, Tuple[int, int]]: Un tuple composé du type et de la position du coup joué.
         """
-        pass
+        numero = (1, 2)
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if self.partie_terminée():
+            raise QuoridorError(MSG11)
+        self.partie["joueurs"][joueur-1]["pos"] = self.bestsuccessor(joueur)
+        return ("D", self.bestsuccessor)
+
+    def bestsuccessor(self, joueur):
+        """
+        fonction qui permet de jouer le meilleur coup parmis les
+        coups disponibles qui ne nous enferment pas.
+        """
+        pos = self.partie["joueurs"][joueur-1]["pos"]
+        obj = "B1" if joueur == 1 else "B2"
+        successors = []
+        graphe = construire_graphe(
+            [joueur['pos'] for joueur in self.partie['joueurs']],
+            self.partie['murs']['horizontaux'],
+            self.partie['murs']['verticaux']
+        )
+        successors = list(graphe.successors(pos))
+        for index, data in enumerate(successors):
+            if not isinstance(data, tuple):
+                successors.pop(index)
+        existchemin = [j for j in (nx.has_path(graphe, i, obj) for i in successors)]
+        dictchemin = dict(zip(successors, existchemin))
+        length = [len(nx.shortest_path(graphe, key, obj)) for key in successors]
+        shrtpth = dict(zip(successors, length))
+        for key, val in dictchemin:
+            if not val:
+                shrtpth.pop(key)
+        print(joueur, shrtpth)
+        return min(shrtpth.keys(), key=shrtpth.get)
 
     def partie_terminée(self):
         """Déterminer si la partie est terminée.
@@ -183,7 +231,15 @@ class Quoridor:
         Returns:
             str/bool: Le nom du gagnant si la partie est terminée; False autrement.
         """
-        pass
+        joueur1, joueur2 = (self.partie["joueurs"][i] for i in (0, 1))
+        pos1 = joueur1["pos"]
+        pos2 = joueur2["pos"]
+        if pos1[1] == 9:
+            return joueur1["nom"]
+        elif pos2[1] == 1:
+            return joueur2["nom"]
+        else:
+            return False
 
     def placer_mur(self, joueur, position, orientation):
         """Placer un mur.
@@ -201,7 +257,32 @@ class Quoridor:
             QuoridorError: La position est invalide pour cette orientation.
             QuoridorError: Le joueur a déjà placé tous ses murs.
         """
-        pass
+        numero = (1, 2)
+        ortn = ("horizontal", "vertical")
+        cd = position
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if orientation not in ortn:
+            raise QuoridorError(MSG14)
+        if self.partie["joueurs"][joueur-1]["murs"] == 0:
+            raise QuoridorError(MSG15)
+        if orientation == "horizontal":
+            for pos in self.partie["murs"]["horizontaux"]:
+                if (cd[0] == pos[0]-1 or cd[0] == pos[0] or cd[0] == pos[0]+1) and cd[1] == pos[1]:
+                    raise QuoridorError(MSG14)
+            self.partie["joueurs"][joueur-1]["murs"] -= 1
+            self.partie["murs"]["horizontaux"].append(position)
+        elif orientation == "vertical":
+            for pos in self.partie["murs"]["verticaux"]:
+                if (cd[1] == pos[1]-1 or cd[1] == pos[1] or cd[1] == pos[1]+1) and cd[0] == pos[0]:
+                    raise QuoridorError(MSG14)
+            self.partie["joueurs"][joueur-1]["murs"] -= 1
+            self.partie["murs"]["verticaux"].append(position)
+        for vert in self.partie["murs"]["verticaux"]:
+            for hori in self.partie["murs"]["horizontaux"]:
+                if vert == (hori[0]+1, hori[1]-1):
+                    raise QuoridorError(MSG14)
+        self.analyser(self.partie)
 
     def analyser(self, partie):
         """
@@ -345,3 +426,45 @@ def afficher_damier_ascii(dictio):
         affichage += f'{str(i)+3*" "}'
     affichage += '\n'
     return affichage
+
+if __name__ == "__main__":
+    QUORID = Quoridor(["will", "oeuf"])
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print("jd")
+    # print(QUORID.état_partie())
+    QUORID.jouer_coup(2)
+    print(QUORID)
+    # print(QUORID.état_partie())
+    QUORID.jouer_coup(2)
+    print(QUORID.état_partie())
+    # QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    # print(QUORID) ----
+    # QUORID.jouer_coup(1)
+    # print(QUORID)
+
+    # QUORID.déplacer_jeton(2, (3, 5))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 4))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 3))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 2))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 1))
+    print(QUORID)
+    print(QUORID.partie_terminée())
