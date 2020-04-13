@@ -1,8 +1,25 @@
 import networkx as nx
 
 
+MSG1 = "L'argument 'joueurs' n'est pas itérable."
+MSG2 = "L'itérable de joueurs en contient un nombre différent de deux."
+MSG3 = "Le nombre de murs qu'un joueur peut placer est plus grand que 10, ou négatif."
+MSG4 = "La position d'un joueur est invalide."
+MSG5 = "L'argument 'murs' n'est pas un dictionnaire lorsque présent."
+MSG6 = "Le total des murs placés et plaçables n'est pas égal à 20."
+MSG7 = "La position d'un mur est invalide."
+MSG8 = "Le numéro du joueur est autre que 1 ou 2."
+MSG9 = "La position est invalide (en dehors du damier)."
+MSG10 ="La position est invalide pour l'état actuel du jeu."
+MSG11 = "La partie est déjà terminée."
+MSG13 = "Un mur occupe déjà cette position."
+MSG14 = "La position est invalide pour cette orientation."
+MSG15 = "Le joueur a déjà placé tous ses murs."
+
 # TODO: Définissez votre classe QuoridorError ici.
 
+class QuoridorError(Exception):
+    """type QuoridorError"""
 
 class Quoridor:
     """Classe pour encapsuler le jeu Quoridor.
