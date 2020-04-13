@@ -1,3 +1,4 @@
+"""Module Quoridor"""
 import networkx as nx
 
 
@@ -10,7 +11,7 @@ MSG6 = "Le total des murs placés et plaçables n'est pas égal à 20."
 MSG7 = "La position d'un mur est invalide."
 MSG8 = "Le numéro du joueur est autre que 1 ou 2."
 MSG9 = "La position est invalide (en dehors du damier)."
-MSG10 ="La position est invalide pour l'état actuel du jeu."
+MSG10 = "La position est invalide pour l'état actuel du jeu."
 MSG11 = "La partie est déjà terminée."
 MSG13 = "Un mur occupe déjà cette position."
 MSG14 = "La position est invalide pour cette orientation."
@@ -31,6 +32,7 @@ class Quoridor:
     Examples:
         >>> q.Quoridor()
     """
+
     def __init__(self, joueurs, murs=None):
         """Constructeur de la classe Quoridor.
 
@@ -169,7 +171,7 @@ class Quoridor:
             situe entre les lignes y-1 et y, et bloque les colonnes x et x+1. De même, un
             mur vertical se situe entre les colonnes x-1 et x, et bloque les lignes y et y+1.
         """
-        pass
+        return self.partie
 
     def jouer_coup(self, joueur):
         """Jouer un coup automatique pour un joueur.
@@ -184,12 +186,18 @@ class Quoridor:
         Raises:
             QuoridorError: Le numéro du joueur est autre que 1 ou 2.
             QuoridorError: La partie est déjà terminée.
-            
+
         Returns:
             Tuple[str, Tuple[int, int]]: Un tuple composé du type et de la position du coup joué.
         """
-        pass
-    
+        numero = (1, 2)
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if self.partie_terminée():
+            raise QuoridorError(MSG11)
+        self.partie["joueurs"][joueur-1]["pos"] = self.bestsuccessor(joueur)
+        return ("D", self.bestsuccessor)
+
     def bestsuccessor(self, joueur):
         """
         fonction qui permet de jouer le meilleur coup parmis les
@@ -214,6 +222,7 @@ class Quoridor:
         for key, val in dictchemin:
             if not val:
                 shrtpth.pop(key)
+        print(joueur, shrtpth)
         return min(shrtpth.keys(), key=shrtpth.get)
 
     def partie_terminée(self):
@@ -417,3 +426,45 @@ def afficher_damier_ascii(dictio):
         affichage += f'{str(i)+3*" "}'
     affichage += '\n'
     return affichage
+
+if __name__ == "__main__":
+    QUORID = Quoridor(["will", "oeuf"])
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    print("jd")
+    # print(QUORID.état_partie())
+    QUORID.jouer_coup(2)
+    print(QUORID)
+    # print(QUORID.état_partie())
+    QUORID.jouer_coup(2)
+    print(QUORID.état_partie())
+    # QUORID.jouer_coup(1)
+    print(QUORID)
+    QUORID.jouer_coup(1)
+    # print(QUORID) ----
+    # QUORID.jouer_coup(1)
+    # print(QUORID)
+
+    # QUORID.déplacer_jeton(2, (3, 5))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 4))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 3))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 2))
+    # print(QUORID)
+    # QUORID.déplacer_jeton(2, (3, 1))
+    print(QUORID)
+    print(QUORID.partie_terminée())
