@@ -63,6 +63,14 @@ class Quoridor:
             QuoridorError: Le total des murs placés et plaçables n'est pas égal à 20.
             QuoridorError: La position d'un mur est invalide.
         """
+        try:
+            assert isinstance(joueurs, list)
+        except AssertionError:
+            raise QuoridorError(MSG1)
+        if len(joueurs) > 2:
+            raise QuoridorError(MSG2)
+        if murs is not None and not isinstance(murs, dict):
+            raise QuoridorError(MSG5)
         self.partie = {
             "joueurs": [
                 {"nom": "", "murs": 0, "pos": tuple()},
@@ -72,6 +80,11 @@ class Quoridor:
                 "horizontaux": [], "verticaux": []
             }
         }
+        self.initialiser_joueur(joueurs[0], 0)
+        self.initialiser_joueur(joueurs[1], 1)
+        if murs:
+            self.partie["murs"] = murs
+        self.analyser(self.partie)
 
     def initialiser_joueur(self, joueur, index):
         """init joueur"""
@@ -190,6 +203,29 @@ class Quoridor:
         """
         pass
 
+    def analyser(self, partie):
+        """
+            Validation des positions et des murs
+        """
+        places = len(partie["murs"]["horizontaux"]) + len(partie["murs"]["verticaux"])
+        placables = partie["joueurs"][0]["murs"] + partie["joueurs"][1]["murs"]
+        if places + placables != 20:
+            raise QuoridorError(MSG6)
+        for joueurs in partie["joueurs"]:
+            if joueurs["murs"] > 10 or joueurs["murs"] < 0:
+                raise QuoridorError(MSG3)
+            if joueurs["pos"][0] < 1 or joueurs["pos"][0] > 9:
+                raise QuoridorError(MSG9)
+            if joueurs["pos"][1] < 1 or joueurs["pos"][1] > 9:
+                raise QuoridorError(MSG9)
+        if partie["joueurs"][0]["pos"] == partie["joueurs"][1]["pos"]:
+            raise QuoridorError(MSG10)
+        for absc, ordo in partie["murs"]["horizontaux"]:
+            if absc < 1 or absc > 8 or ordo < 2 or ordo > 9:
+                raise QuoridorError(MSG7)
+        for absc, ordo in partie["murs"]["verticaux"]:
+            if absc < 2 or absc > 9 or ordo < 1 or ordo > 8:
+                raise QuoridorError(MSG7)
 
 def construire_graphe(joueurs, murs_horizontaux, murs_verticaux):
     """Construire un graphe de la grille.
