@@ -1,6 +1,6 @@
 """Module Quoridor"""
 import networkx as nx
-
+from api import jouer_coup
 
 MSG1 = "L'argument 'joueurs' n'est pas itérable."
 MSG2 = "L'itérable de joueurs en contient un nombre différent de deux."
@@ -17,59 +17,19 @@ MSG13 = "Un mur occupe déjà cette position."
 MSG14 = "La position est invalide pour cette orientation."
 MSG15 = "Le joueur a déjà placé tous ses murs."
 
-# TODO: Définissez votre classe QuoridorError ici.
-
 class QuoridorError(Exception):
     """type QuoridorError"""
 
 class Quoridor:
-    """Classe pour encapsuler le jeu Quoridor.
-
-    Attributes:
-        état (dict): état du jeu tenu à jour.
-        TODO: Identifiez les autres attribut de votre classe
-
-    Examples:
-        >>> q.Quoridor()
-    """
+    """Classe pour encapsuler le jeu Quoridor"""
 
     def __init__(self, joueurs, murs=None):
-        """Constructeur de la classe Quoridor.
-
-        Initialise une partie de Quoridor avec les joueurs et les murs spécifiés,
-        en s'assurant de faire une copie profonde de tout ce qui a besoin d'être copié.
-
-        Args:
-            joueurs (List): un itérable de deux joueurs dont le premier est toujours celui qui
-                débute la partie. Un joueur est soit une chaîne de caractères soit un dictionnaire.
-                Dans le cas d'une chaîne, il s'agit du nom du joueur. Selon le rang du joueur dans
-                l'itérable, sa position est soit (5,1) soit (5,9), et chaque joueur peut
-                initialement placer 10 murs. Dans le cas où l'argument est un dictionnaire,
-                celui-ci doit contenir une clé 'nom' identifiant le joueur, une clé 'murs'
-                spécifiant le nombre de murs qu'il peut encore placer, et une clé 'pos' qui
-                spécifie sa position (x, y) actuelle. Notez que les positions peuvent être sous
-                forme de tuple (x, y) ou de liste [x, y].
-            murs (Dict, optionnel): Un dictionnaire contenant une clé 'horizontaux' associée à
-                la liste des positions (x, y) des murs horizontaux, et une clé 'verticaux'
-                associée à la liste des positions (x, y) des murs verticaux. Par défaut, il
-                n'y a aucun mur placé sur le jeu. Notez que les positions peuvent être sous
-                forme de tuple (x, y) ou de liste [x, y].
-
-        Raises:
-            QuoridorError: L'argument 'joueurs' n'est pas itérable.
-            QuoridorError: L'itérable de joueurs en contient un nombre différent de deux.
-            QuoridorError: Le nombre de murs qu'un joueur peut placer est plus grand que 10,
-                            ou négatif.
-            QuoridorError: La position d'un joueur est invalide.
-            QuoridorError: L'argument 'murs' n'est pas un dictionnaire lorsque présent.
-            QuoridorError: Le total des murs placés et plaçables n'est pas égal à 20.
-            QuoridorError: La position d'un mur est invalide.
-        """
+        """Constructeur de la classe Quoridor.sécifiés"""
         try:
             assert isinstance(joueurs, list)
         except AssertionError:
             raise QuoridorError(MSG1)
-        if len(joueurs) > 2:
+        if len(joueurs) != 2:
             raise QuoridorError(MSG2)
         if murs is not None and not isinstance(murs, dict):
             raise QuoridorError(MSG5)
@@ -79,7 +39,7 @@ class Quoridor:
                 {"nom": "", "murs": 0, "pos": tuple()},
             ],
             "murs": {
-                "horizontaux": [], "verticaux": []
+                "horizontaux" : [], "verticaux": []
             }
         }
         self.initialiser_joueur(joueurs[0], 0)
@@ -103,9 +63,7 @@ class Quoridor:
 
     def __str__(self):
         """Représentation en art ascii de l'état actuel de la partie.
-
         Cette représentation est la même que celle du projet précédent.
-
         Returns:
             str: La chaîne de caractères de la représentation.
         """
@@ -113,13 +71,10 @@ class Quoridor:
 
     def déplacer_jeton(self, joueur, position):
         """Déplace un jeton.
-
         Pour le joueur spécifié, déplacer son jeton à la position spécifiée.
-
         Args:
             joueur (int): Un entier spécifiant le numéro du joueur (1 ou 2).
             position (Tuple[int, int]): Le tuple (x, y) de la position du jeton (1<=x<=9 et 1<=y<=9).
-
         Raises:
             QuoridorError: Le numéro du joueur est autre que 1 ou 2.
             QuoridorError: La position est invalide (en dehors du damier).
@@ -142,13 +97,10 @@ class Quoridor:
 
     def état_partie(self):
         """Produire l'état actuel de la partie.
-
         Returns:
             Dict: Une copie de l'état actuel du jeu sous la forme d'un dictionnaire.
                   Notez que les positions doivent être sous forme de tuple (x, y) uniquement.
-
         Examples:
-
             {
                 'joueurs': [
                     {'nom': nom1, 'murs': n1, 'pos': (x1, y1)},
@@ -159,12 +111,10 @@ class Quoridor:
                     'verticaux': [...],
                 }
             }
-
             où la clé 'nom' d'un joueur est associée à son nom, la clé 'murs' est associée
             au nombre de murs qu'il peut encore placer sur ce damier, et la clé 'pos' est
             associée à sa position sur le damier. Une position est représentée par un tuple
             de deux coordonnées x et y, où 1<=x<=9 et 1<=y<=9.
-
             Les murs actuellement placés sur le damier sont énumérés dans deux listes de
             positions (x, y). Les murs ont toujours une longueur de 2 cases et leur position
             est relative à leur coin inférieur gauche. Par convention, un mur horizontal se
@@ -175,18 +125,14 @@ class Quoridor:
 
     def jouer_coup(self, joueur):
         """Jouer un coup automatique pour un joueur.
-
         Pour le joueur spécifié, jouer automatiquement son meilleur coup pour l'état actuel
         de la partie. Ce coup est soit le déplacement de son jeton, soit le placement d'un
         mur horizontal ou vertical.
-
         Args:
             joueur (int): Un entier spécifiant le numéro du joueur (1 ou 2).
-
         Raises:
             QuoridorError: Le numéro du joueur est autre que 1 ou 2.
             QuoridorError: La partie est déjà terminée.
-
         Returns:
             Tuple[str, Tuple[int, int]]: Un tuple composé du type et de la position du coup joué.
         """
@@ -195,17 +141,52 @@ class Quoridor:
             raise QuoridorError(MSG8)
         if self.partie_terminée():
             raise QuoridorError(MSG11)
-        self.partie["joueurs"][joueur-1]["pos"] = self.bestsuccessor(joueur)
-        return ("D", self.bestsuccessor)
+        self.partie["joueurs"][joueur-1]["pos"] = self.bestsuccessor(1)
+        return "D", self.bestsuccessor(1)
+
+    def jouer_coup_graph(self, joueur):
+        """Jouer un coup automatique pour un joueur
+            En mode graphique
+        """
+        numero = (1, 2)
+        if joueur not in numero:
+            raise QuoridorError(MSG8)
+        if self.partie_terminée():
+            raise QuoridorError(MSG11)
+        return "D", self.bestsuccessor(1)
+
+    def jouer_auto_console(self, idf):
+        """fonction"""
+        typef, pos = self.jouer_coup_graph(1)
+        self.partie = jouer_coup(idf, typef, str(pos))
+        print(afficher_damier_ascii(self.partie))
+
+    def jouer_auto_graph(self, idf):
+        """fonction"""
+        typef, pos = self.jouer_coup_graph(1)
+        self.partie = jouer_coup(idf, typef, str(pos))
+
+    def convertir(self):
+        """fonction"""
+        for i in (0, 1):
+            self.partie["joueurs"][i]["pos"] = tuple(self.partie["joueurs"][i]["pos"])
+        for i in range(len(self.partie["murs"]["horizontaux"])):
+            self.partie["murs"]["horizontaux"][i] = tuple(self.partie["murs"]["horizontaux"][i])
+        for i in range(len(self.partie["murs"]["verticaux"])):
+            self.partie["murs"]["verticaux"][i] = tuple(self.partie["murs"]["verticaux"][i])
+
+    def jouer_manuel_graph(self, idf, typef, pos):
+        self.partie = jouer_coup(idf, typef, str(pos))
 
     def bestsuccessor(self, joueur):
         """
         fonction qui permet de jouer le meilleur coup parmis les
         coups disponibles qui ne nous enferment pas.
         """
-        pos = self.partie["joueurs"][joueur-1]["pos"]
+        pos = tuple(self.partie["joueurs"][joueur-1]["pos"])
         obj = "B1" if joueur == 1 else "B2"
         successors = []
+        self.convertir()
         graphe = construire_graphe(
             [joueur['pos'] for joueur in self.partie['joueurs']],
             self.partie['murs']['horizontaux'],
@@ -226,7 +207,6 @@ class Quoridor:
 
     def partie_terminée(self):
         """Déterminer si la partie est terminée.
-
         Returns:
             str/bool: Le nom du gagnant si la partie est terminée; False autrement.
         """
@@ -242,14 +222,11 @@ class Quoridor:
 
     def placer_mur(self, joueur, position, orientation):
         """Placer un mur.
-
         Pour le joueur spécifié, placer un mur à la position spécifiée.
-
         Args:
             joueur (int): le numéro du joueur (1 ou 2).
             position (Tuple[int, int]): le tuple (x, y) de la position du mur.
             orientation (str): l'orientation du mur ('horizontal' ou 'vertical').
-
         Raises:
             QuoridorError: Le numéro du joueur est autre que 1 ou 2.
             QuoridorError: Un mur occupe déjà cette position.
@@ -309,15 +286,12 @@ class Quoridor:
 
 def construire_graphe(joueurs, murs_horizontaux, murs_verticaux):
     """Construire un graphe de la grille.
-
     Crée le graphe des déplacements admissibles pour les joueurs.
     Vous n'avez pas à modifer cette fonction.
-
     Args:
         joueurs (List[Tuple]): une liste des positions (x,y) des joueurs.
         murs_horizontaux (List[Tuple]): une liste des positions (x,y) des murs horizontaux.
         murs_verticaux (List[Tuple]): une liste des positions (x,y) des murs verticaux.
-
     Returns:
         DiGraph: le graphe bidirectionnel (en networkX) des déplacements admissibles.
     """
